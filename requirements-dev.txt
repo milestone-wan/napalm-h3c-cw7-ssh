@@ -1,4 +1,6 @@
 twine
 setuptools
 build
+pytest
+pytest-cov
 -r requirements.txt

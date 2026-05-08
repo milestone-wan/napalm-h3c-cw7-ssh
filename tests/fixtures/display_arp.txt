@@ -1,0 +1,4 @@
+IP address      MAC address     VLAN/VSI   Interface                Aging Type
+10.0.0.2        00e0-fc00-0002  1          GE1/0/1                  20    Dynamic
+10.0.0.3        00e0-fc00-0003  1          GE1/0/2                  15    Dynamic
+192.168.1.2     00e0-fc00-0004  10         GE1/0/3                  18    Static

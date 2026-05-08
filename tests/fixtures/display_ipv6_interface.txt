@@ -1,0 +1,23 @@
+GigabitEthernet1/0/1 current state: UP
+Line protocol current state: UP
+IPv6 is enabled, link-local address is FE80::200:5EFF:FE04:5601
+  Global unicast address(es):
+    2001:DB8::1, subnet is 2001:DB8::/64
+  Joined group address(es):
+    FF02::1:FF00:1
+    FF02::1:FF04:5601
+    FF02::2
+    FF02::1
+  MTU is 1500 bytes
+  ND DAD is enabled, number of DAD attempts: 1
+
+Vlan-interface10 current state: UP
+Line protocol current state: UP
+IPv6 is enabled, link-local address is FE80::200:5EFF:FE04:5602
+  Global unicast address(es):
+    2001:DB8:1::1, subnet is 2001:DB8:1::/64
+    2001:DB8:2::1, subnet is 2001:DB8:2::/64
+  Joined group address(es):
+    FF02::1:FF00:1
+    FF02::1
+  MTU is 1500 bytes

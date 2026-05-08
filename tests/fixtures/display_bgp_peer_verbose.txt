@@ -1,0 +1,16 @@
+  Peer: 10.0.0.2                                    Local: 10.0.0.1
+  Type: EBGP link                                    Local AS: 65000
+  BGP current state: Established                     Peer AS: 65001
+  Local address: 10.0.0.1  Local port: 179
+  Remote address: 10.0.0.2 Remote port: 54321
+  Hold time: 180
+  Keepalive interval: 60
+  Configured hold time: 180
+  Configured keepalive interval: 60
+  Messages sent: 1234
+  Messages received: 5678
+  Update messages sent: 100
+  Update messages received: 200
+  Import route policy: POLICY-IN
+  Export route policy: POLICY-OUT
+  Up/Down time: 1d02h

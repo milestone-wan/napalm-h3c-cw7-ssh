@@ -1,0 +1,8 @@
+GigabitEthernet1/0/1 current state: UP
+Line protocol current state: UP
+Internet Address is 10.0.0.1/24 Primary
+Internet Address is 10.0.1.1/24 Sub
+
+Vlan-interface10 current state: UP
+Line protocol current state: UP
+Internet Address is 192.168.1.1/24 Primary

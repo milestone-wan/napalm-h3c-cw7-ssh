@@ -1,0 +1,8 @@
+Destinations : 5        Routes : 5
+
+Destination/Mask   Proto Pre Cost  NextHop         Interface
+0.0.0.0/0          Static 60   0     10.0.0.1        GE1/0/1
+10.0.0.0/24        Direct 0    0     10.0.0.2        GE1/0/1
+10.0.0.2/32        Direct 0    0     127.0.0.1       InLoop0
+192.168.1.0/24     OSPF   10   2     10.0.0.1        GE1/0/1
+172.16.0.0/24      BGP    255  0     192.168.1.1     GE1/0/2

@@ -1,0 +1,19 @@
+  VLAN ID: 1
+  VLAN type: Static
+  Route interface: Not configured
+  Description: VLAN 0001
+  Name: VLAN 0001
+  Tagged ports:
+    GigabitEthernet1/0/2
+  Untagged ports:
+    GigabitEthernet1/0/1
+
+  VLAN ID: 10
+  VLAN type: Static
+  Route interface: Configured
+  Description: Management
+  Name: MGMT
+  Tagged ports:
+    GigabitEthernet1/0/2
+  Untagged ports:
+    GigabitEthernet1/0/3

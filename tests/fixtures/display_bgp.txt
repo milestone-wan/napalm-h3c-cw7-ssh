@@ -1,0 +1,2 @@
+BGP local router ID: 10.0.0.1
+Local AS number: 65000

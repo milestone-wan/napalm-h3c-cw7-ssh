@@ -1,0 +1,9 @@
+ #
+ irf-port 1/1
+ port group interface Ten-GigabitEthernet1/0/49
+ port group interface Ten-GigabitEthernet1/0/50
+ #
+ irf-port 1/2
+ port group interface Ten-GigabitEthernet1/0/51
+ port group interface Ten-GigabitEthernet1/0/52
+ #

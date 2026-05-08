@@ -1,0 +1,21 @@
+LLDP neighbor-information of port 1[GigabitEthernet1/0/1]
+  LLDP neighbor index : 1
+  Update time         : 0 days, 0 hours, 0 minutes, 28 seconds
+  Chassis ID          : 00e0-fc00-1001
+  Port ID             : GigabitEthernet1/0/1
+  Port description    : GE1/0/1
+  System name         : Switch-B
+  System description  : H3C Comware Platform Software
+  System capabilities supported: Bridge,Router
+  System capabilities enabled  : Bridge,Router
+
+LLDP neighbor-information of port 2[GigabitEthernet1/0/2]
+  LLDP neighbor index : 2
+  Update time         : 0 days, 1 hours, 0 minutes, 0 seconds
+  Chassis ID          : 00e0-fc00-1002
+  Port ID             : GigabitEthernet1/0/2
+  Port description    : GE1/0/2
+  System name         : Switch-C
+  System description  : H3C Comware Platform Software
+  System capabilities supported: Bridge
+  System capabilities enabled  : Bridge

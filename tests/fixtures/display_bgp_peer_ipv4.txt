@@ -1,0 +1,8 @@
+BGP local router ID: 10.0.0.1
+Local AS number: 65000
+
+Total number of peers: 2          Peers in established state: 1
+
+Peer            AS          State     PrefRcv    Active   Accepted  Upstream
+10.0.0.2        65001       Established  120      100      120       50
+192.168.1.1     65002       Idle         0        0        0         0

@@ -1,0 +1,5 @@
+Total VPN-Instances configured: 2
+
+VPN-Instance Name               RD                     Create Time
+MGMT                            65000:100              2024/01/15 10:23:45
+CUSTOMER_A                      65000:200              2024/02/20 14:30:00

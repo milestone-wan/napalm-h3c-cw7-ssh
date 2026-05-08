@@ -1,0 +1,2 @@
+Slot 1 CPU usage:
+  1  0    5%         3%         2%

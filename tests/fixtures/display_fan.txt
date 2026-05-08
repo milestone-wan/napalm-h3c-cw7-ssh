@@ -1,0 +1,5 @@
+Slot 1:
+  Fan 1
+  Status: Normal
+  Fan 2
+  Status: Normal

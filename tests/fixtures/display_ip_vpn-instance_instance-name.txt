@@ -1,0 +1,7 @@
+VPN-Instance Name: MGMT
+  Route Distinguisher: 65000:100
+  Interfaces:
+    Vlan-interface10
+    GigabitEthernet1/0/1
+  Route Target: import 65000:100
+  Route Target: export 65000:100

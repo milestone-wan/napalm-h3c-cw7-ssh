@@ -1,0 +1,4 @@
+MAC address      VLAN  State    Interface                Aging
+00e0-fc00-0001   1     Learned  GE1/0/1                  20
+00e0-fc00-0002   10    Learned  GE1/0/2                  15
+00e0-fc00-0003   1     Static   GE1/0/3                  N/A
