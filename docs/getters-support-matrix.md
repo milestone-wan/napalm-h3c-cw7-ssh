@@ -49,7 +49,7 @@ This document tracks the intended NAPALM API coverage for the H3C Comware driver
 | --- | --- | --- | --- |
 | `get_facts` | `partial` | `display version`, `display interface`, `display device manuinfo` | Existing V7-oriented implementation; V9/router validation needed. |
 | `get_interfaces` | `partial` | `display interface` | Existing implementation; parser is known to be broad and needs redesign for counters/output variants. |
-| `get_interfaces_ip` | `partial` | `display ip interface` | Existing implementation only returns IPv4. IPv6 support is planned separately. |
+| `get_interfaces_ip` | `partial` | `display ip interface`, `display ipv6 interface` | IPv4 + IPv6 support. Link-local addresses included with /10 prefix. Pending V9/router validation. |
 | `get_interfaces_counters` | `planned` | Formerly `display interface` | Explicit method entry exists and raises `NotImplementedError`; previous parser approach is deprecated and needs rewrite. |
 | `get_lldp_neighbors` | `partial` | `display lldp neighbor-information verbose` | Existing implementation; V9/router validation needed. |
 | `get_lldp_neighbors_detail` | `partial` | `display lldp neighbor-information verbose` | Existing implementation; profile-specific validation needed. |

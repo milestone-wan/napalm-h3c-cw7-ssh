@@ -101,6 +101,13 @@ DEFAULT_COMMAND_SPECS = (
         roles=SWITCH_AND_ROUTER,
     ),
     CommandSpec(
+        key="interfaces.ipv6",
+        getter="get_interfaces_ip",
+        command="display ipv6 interface",
+        versions=COMMON_VERSIONS,
+        roles=SWITCH_AND_ROUTER,
+    ),
+    CommandSpec(
         key="lldp.neighbors",
         getter="get_lldp_neighbors",
         command="display lldp neighbor-information verbose",

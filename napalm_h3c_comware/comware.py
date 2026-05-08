@@ -699,25 +699,54 @@ class ComwareDriver(NetworkDriver):
         return arp_table
 
     def get_interfaces_ip(self):
+        """Return IP addresses (IPv4 and IPv6) configured on interfaces.
+
+        IPv4 data from ``display ip interface``, IPv6 data from
+        ``display ipv6 interface``. Each address family is parsed
+        independently so one failure does not affect the other.
+        """
         interfaces = {}
 
         try:
             command = self._get_command("interfaces.ipv4")
             structured_output = self._get_structured_output(command)
             for iface_entry in structured_output:
-                interface = iface_entry.get("interface", "")
+                interface = canonical_interface_name_comware(
+                    iface_entry.get("interface", "")
+                )
                 ip_list = iface_entry.get("ip_address", [])
                 ipv4 = {}
-                if ip_list and len(ip_list) > 0:
+                if ip_list:
                     for ip in ip_list:
                         parts = ip.split("/")
                         if len(parts) == 2:
                             ipv4[parts[0]] = {"prefix_length": int(parts[1])}
-                    interfaces[interface] = {
-                        "ipv4": ipv4
-                    }
+                if ipv4:
+                    interfaces.setdefault(interface, {})["ipv4"] = ipv4
         except (KeyError, AttributeError, ParserError) as e:
-            logger.error("Error in get_interfaces_ip: %s", e)
+            logger.error("Error in get_interfaces_ip (IPv4): %s", e)
+
+        try:
+            command = self._get_command("interfaces.ipv6")
+            structured_output = self._get_structured_output(command)
+            for iface_entry in structured_output:
+                interface = canonical_interface_name_comware(
+                    iface_entry.get("interface", "")
+                )
+                ipv6 = {}
+                # Global unicast addresses
+                global_addrs = iface_entry.get("global_address", [])
+                global_prefixes = iface_entry.get("global_prefix_length", [])
+                for addr, prefix in zip(global_addrs, global_prefixes):
+                    ipv6[addr] = {"prefix_length": int(prefix)}
+                # Link-local address (fixed /10 prefix)
+                link_local = iface_entry.get("link_local", "")
+                if link_local:
+                    ipv6[link_local] = {"prefix_length": 10}
+                if ipv6:
+                    interfaces.setdefault(interface, {})["ipv6"] = ipv6
+        except (KeyError, AttributeError, ParserError) as e:
+            logger.error("Error in get_interfaces_ip (IPv6): %s", e)
 
         return interfaces
 
