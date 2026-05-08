@@ -353,7 +353,74 @@ class ComwareDriver(NetworkDriver):
         return lldp
 
     def get_bgp_neighbors(self):
-        self._raise_not_implemented("get_bgp_neighbors")
+        """Return BGP neighbor summary per VRF.
+
+        Uses ``display bgp`` for router_id and ``display bgp peer ipv4``
+        for peer state and prefix counts.
+        """
+        result = {}
+
+        try:
+            # Get router_id from display bgp
+            router_id = ""
+            try:
+                summary_cmd = self._get_command("bgp.summary")
+                summary_output = self._get_structured_output(
+                    summary_cmd, "display_bgp"
+                )
+                if summary_output:
+                    router_id = summary_output[0].get("router_id", "")
+            except (UnsupportedCommandError, ParserError):
+                logger.warning("Could not get BGP router_id from display bgp")
+
+            # Get peer list
+            command = self._get_command("bgp.peer")
+            structured_output = self._get_structured_output(command)
+
+            peers = {}
+            for peer_entry in structured_output:
+                if not router_id:
+                    router_id = peer_entry.get("router_id", "")
+
+                peer_ip = peer_entry.get("peer", "")
+                if not peer_ip:
+                    continue
+
+                state = peer_entry.get("state", "")
+                is_up = state.lower() == "established"
+                local_as = int(parse_null(peer_entry.get("local_as", 0), 0))
+                remote_as = int(parse_null(peer_entry.get("remote_as", 0), 0))
+
+                received_prefixes = int(parse_null(peer_entry.get("pref_rcv", 0), 0))
+                accepted_prefixes = int(parse_null(peer_entry.get("accepted", 0), 0))
+                sent_prefixes = int(parse_null(peer_entry.get("upstream", 0), 0))
+
+                peers[peer_ip] = {
+                    "local_as": local_as,
+                    "remote_as": remote_as,
+                    "remote_id": "",
+                    "is_up": is_up,
+                    "is_enabled": True,
+                    "description": "",
+                    "uptime": -1,
+                    "address_family": {
+                        "ipv4": {
+                            "received_prefixes": received_prefixes,
+                            "accepted_prefixes": accepted_prefixes,
+                            "sent_prefixes": sent_prefixes,
+                        }
+                    },
+                }
+
+            result["global"] = {
+                "router_id": router_id,
+                "peers": peers,
+            }
+
+        except (KeyError, AttributeError, ParserError) as e:
+            logger.error("Error in get_bgp_neighbors: %s", e)
+
+        return result
 
     def _get_memory(self, verbose=True):
 
@@ -725,7 +792,72 @@ class ComwareDriver(NetworkDriver):
         return mac_address_table
 
     def get_route_to(self, destination="", protocol="", longer=False):
-        self._raise_not_implemented("get_route_to")
+        """Return route entries from the H3C Comware routing table.
+
+        When ``destination`` is provided, uses verbose output for richer fields
+        (age, state). Otherwise uses bulk non-verbose output where age defaults
+        to -1 and inactive_reason defaults to "".
+        """
+        routes = defaultdict(list)
+
+        try:
+            if destination:
+                cmd_template = self._get_command("route.table.verbose")
+                command = cmd_template.format(destination)
+                structured_output = self._get_structured_output(
+                    command, "display_ip_routing-table_verbose"
+                )
+                for entry in structured_output:
+                    proto = entry.get("protocol", "").lower()
+                    if protocol and proto != protocol.lower():
+                        continue
+                    state = entry.get("state", "")
+                    is_active = "active" in state.lower() if state else True
+                    age_str = entry.get("age", "")
+                    age = parse_time(age_str) if age_str else -1
+                    route_entry = {
+                        "protocol": proto,
+                        "current_active": is_active,
+                        "last_active": is_active,
+                        "age": age,
+                        "next_hop": entry.get("next_hop", ""),
+                        "outgoing_interface": entry.get("interface", ""),
+                        "selected_next_hop": is_active,
+                        "preference": int(parse_null(entry.get("preference", 0), 0)),
+                        "inactive_reason": "" if is_active else "Inactive",
+                        "routing_table": "default",
+                        "protocol_attributes": {},
+                    }
+                    dest = entry.get("destination", destination)
+                    routes[dest].append(route_entry)
+            else:
+                command = self._get_command("route.table")
+                structured_output = self._get_structured_output(command)
+                for entry in structured_output:
+                    proto = entry.get("protocol", "").lower()
+                    if protocol and proto != protocol.lower():
+                        continue
+                    route_entry = {
+                        "protocol": proto,
+                        "current_active": True,
+                        "last_active": True,
+                        "age": -1,
+                        "next_hop": entry.get("next_hop", ""),
+                        "outgoing_interface": entry.get("interface", ""),
+                        "selected_next_hop": True,
+                        "preference": int(parse_null(entry.get("preference", 0), 0)),
+                        "inactive_reason": "",
+                        "routing_table": "default",
+                        "protocol_attributes": {},
+                    }
+                    dest = entry.get("destination", "")
+                    if dest:
+                        routes[dest].append(route_entry)
+
+        except (KeyError, AttributeError, ParserError) as e:
+            logger.error("Error in get_route_to: %s", e)
+
+        return dict(routes)
 
     def get_config(self, retrieve="all", full=False, sanitized=False):
         configs = {"startup": "", "running": "", "candidate": ""}
@@ -745,13 +877,228 @@ class ComwareDriver(NetworkDriver):
         return configs
 
     def get_network_instances(self, name: str = ""):
-        self._raise_not_implemented("get_network_instances")
+        """Return VRF/network instance information.
+
+        Always includes the default instance. VPN instances are discovered
+        from ``display ip vpn-instance`` and enriched with interface data
+        from ``display ip vpn-instance instance-name <name>``.
+        """
+        instances = {}
+
+        try:
+            # Always add the default instance
+            instances["default"] = {
+                "name": "default",
+                "type": "DEFAULT_INSTANCE",
+                "state": {"route_distinguisher": None},
+                "interfaces": {"interface": {}},
+            }
+
+            # Populate default instance interfaces from get_interfaces_ip
+            try:
+                interfaces_ip = self.get_interfaces_ip()
+                default_ifaces = {iface: {} for iface in interfaces_ip}
+                instances["default"]["interfaces"]["interface"] = default_ifaces
+            except Exception:
+                pass
+
+            # Get VPN instances
+            command = self._get_command("vpn.instance")
+            structured_output = self._get_structured_output(command)
+
+            for vrf_entry in structured_output:
+                vrf_name = vrf_entry.get("vpn_instance_name", "")
+                if not vrf_name:
+                    continue
+                if name and vrf_name != name:
+                    continue
+
+                rd = vrf_entry.get("rd", "")
+                if rd and rd.lower() in ("<not set>", "none", "-"):
+                    rd = None
+
+                vrf_interfaces = {"interface": {}}
+
+                # Get per-VRF detail for interface list
+                try:
+                    detail_cmd_template = self._get_command("vpn.instance.detail")
+                    detail_cmd = detail_cmd_template.format(vrf_name)
+                    detail_output = self._get_structured_output(
+                        detail_cmd, "display_ip_vpn-instance_instance-name"
+                    )
+                    if detail_output:
+                        iface_list = detail_output[0].get("interfaces", [])
+                        iface_dict = {iface: {} for iface in iface_list}
+                        vrf_interfaces["interface"] = iface_dict
+                except (UnsupportedCommandError, ParserError) as e:
+                    logger.warning(
+                        "Could not get VRF detail for %s: %s", vrf_name, e
+                    )
+
+                instances[vrf_name] = {
+                    "name": vrf_name,
+                    "type": "L3VRF",
+                    "state": {"route_distinguisher": rd},
+                    "interfaces": vrf_interfaces,
+                }
+
+        except (KeyError, AttributeError, ParserError) as e:
+            logger.error("Error in get_network_instances: %s", e)
+
+        return instances
 
     def get_bgp_config(self, group="", neighbor=""):
         self._raise_not_implemented("get_bgp_config")
 
     def get_bgp_neighbors_detail(self, neighbor_address=""):
-        self._raise_not_implemented("get_bgp_neighbors_detail")
+        """Return detailed BGP neighbor information.
+
+        WARNING: This getter iterates each BGP peer with a separate
+        ``display bgp peer <ip> verbose`` command, which is expensive
+        on devices with many peers.
+        """
+        result = {}
+
+        try:
+            # Step 1: Get peer list from summary
+            peer_cmd = self._get_command("bgp.peer")
+            peer_output = self._get_structured_output(peer_cmd)
+
+            # Step 2: Get router_id
+            router_id = ""
+            try:
+                summary_cmd = self._get_command("bgp.summary")
+                summary_output = self._get_structured_output(
+                    summary_cmd, "display_bgp"
+                )
+                if summary_output:
+                    router_id = summary_output[0].get("router_id", "")
+            except (UnsupportedCommandError, ParserError):
+                pass
+
+            # Step 3: Iterate peers for verbose detail
+            verbose_cmd_template = self._get_command("bgp.peer.verbose")
+
+            for peer_entry in peer_output:
+                peer_ip = peer_entry.get("peer", "")
+                if not peer_ip:
+                    continue
+                if neighbor_address and peer_ip != neighbor_address:
+                    continue
+
+                if not router_id:
+                    router_id = peer_entry.get("router_id", "")
+
+                remote_as = int(parse_null(peer_entry.get("remote_as", 0), 0))
+                local_as = int(parse_null(peer_entry.get("local_as", 0), 0))
+
+                # Get verbose detail for this peer
+                try:
+                    verbose_cmd = verbose_cmd_template.format(peer_ip)
+                    verbose_output = self._get_structured_output(
+                        verbose_cmd, "display_bgp_peer_verbose"
+                    )
+                except (UnsupportedCommandError, ParserError) as e:
+                    logger.warning(
+                        "Could not get verbose detail for peer %s: %s",
+                        peer_ip, e,
+                    )
+                    verbose_output = []
+
+                if verbose_output:
+                    detail = verbose_output[0]
+                    state = detail.get("state", "")
+                    is_up = state.lower() == "established"
+                    uptime_str = detail.get("up_down_time", "")
+                    uptime = parse_time(uptime_str) if uptime_str else -1
+
+                    peer_detail = {
+                        "up": is_up,
+                        "local_as": int(parse_null(detail.get("local_as", local_as), local_as)),
+                        "remote_as": int(parse_null(detail.get("remote_as", remote_as), remote_as)),
+                        "router_id": router_id,
+                        "local_address": detail.get("local_address", ""),
+                        "routing_table": "default",
+                        "local_address_configured": bool(detail.get("local_address", "")),
+                        "local_port": int(parse_null(detail.get("local_port", 0), 0)),
+                        "remote_address": detail.get("remote_address", peer_ip),
+                        "remote_port": int(parse_null(detail.get("remote_port", 0), 0)),
+                        "multihop": False,
+                        "multipath": False,
+                        "remove_private_as": False,
+                        "import_policy": detail.get("import_route_policy", ""),
+                        "export_policy": detail.get("export_route_policy", ""),
+                        "input_messages": int(parse_null(detail.get("messages_received", 0), 0)),
+                        "output_messages": int(parse_null(detail.get("messages_sent", 0), 0)),
+                        "input_updates": int(parse_null(detail.get("update_messages_received", 0), 0)),
+                        "output_updates": int(parse_null(detail.get("update_messages_sent", 0), 0)),
+                        "messages_queued_out": 0,
+                        "connection_state": state,
+                        "previous_connection_state": "",
+                        "last_event": "",
+                        "suppress_4byte_as": False,
+                        "local_as_prepend": False,
+                        "holdtime": int(parse_null(detail.get("hold_time", 0), 0)),
+                        "configured_holdtime": int(parse_null(detail.get("configured_hold_time", 0), 0)),
+                        "keepalive": int(parse_null(detail.get("keepalive_interval", 0), 0)),
+                        "configured_keepalive": int(parse_null(detail.get("configured_keepalive", 0), 0)),
+                        "active_prefix_count": int(parse_null(peer_entry.get("active", 0), 0)),
+                        "received_prefix_count": int(parse_null(peer_entry.get("pref_rcv", 0), 0)),
+                        "accepted_prefix_count": int(parse_null(peer_entry.get("accepted", 0), 0)),
+                        "suppressed_prefix_count": 0,
+                        "advertised_prefix_count": int(parse_null(peer_entry.get("upstream", 0), 0)),
+                        "flap_count": 0,
+                    }
+                else:
+                    # Fallback: construct from summary data
+                    state = peer_entry.get("state", "")
+                    peer_detail = {
+                        "up": state.lower() == "established",
+                        "local_as": local_as,
+                        "remote_as": remote_as,
+                        "router_id": router_id,
+                        "local_address": "",
+                        "routing_table": "default",
+                        "local_address_configured": False,
+                        "local_port": 0,
+                        "remote_address": peer_ip,
+                        "remote_port": 0,
+                        "multihop": False,
+                        "multipath": False,
+                        "remove_private_as": False,
+                        "import_policy": "",
+                        "export_policy": "",
+                        "input_messages": 0,
+                        "output_messages": 0,
+                        "input_updates": 0,
+                        "output_updates": 0,
+                        "messages_queued_out": 0,
+                        "connection_state": state,
+                        "previous_connection_state": "",
+                        "last_event": "",
+                        "suppress_4byte_as": False,
+                        "local_as_prepend": False,
+                        "holdtime": 0,
+                        "configured_holdtime": 0,
+                        "keepalive": 0,
+                        "configured_keepalive": 0,
+                        "active_prefix_count": int(parse_null(peer_entry.get("active", 0), 0)),
+                        "received_prefix_count": int(parse_null(peer_entry.get("pref_rcv", 0), 0)),
+                        "accepted_prefix_count": int(parse_null(peer_entry.get("accepted", 0), 0)),
+                        "suppressed_prefix_count": 0,
+                        "advertised_prefix_count": int(parse_null(peer_entry.get("upstream", 0), 0)),
+                        "flap_count": 0,
+                    }
+
+                vrf_key = "global"
+                result.setdefault(vrf_key, {})
+                result[vrf_key].setdefault(remote_as, [])
+                result[vrf_key][remote_as].append(peer_detail)
+
+        except (KeyError, AttributeError, ParserError) as e:
+            logger.error("Error in get_bgp_neighbors_detail: %s", e)
+
+        return result
 
     def get_ipv6_neighbors_table(self):
         self._raise_not_implemented("get_ipv6_neighbors_table")

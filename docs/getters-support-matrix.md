@@ -58,11 +58,11 @@ This document tracks the intended NAPALM API coverage for the H3C Comware driver
 | `get_mac_address_table` | `partial` | `display mac-address`, `display mac-address mac-move` | Existing implementation; switch-oriented. Router applicability unknown. |
 | `get_vlans` | `partial` | `display vlan all` | Existing implementation; switch-oriented. Router applicability unknown. |
 | `get_config` | `partial` | `display current-configuration`, `display saved-configuration` | Read-only config retrieval exists; sanitization and full mode are not implemented. |
-| `get_route_to` | `planned` | TBD | Explicit method entry exists and raises `NotImplementedError`; required for router support. |
-| `get_bgp_neighbors` | `planned` | TBD | Explicit method entry exists and raises `NotImplementedError`. |
-| `get_network_instances` | `planned` | TBD | Explicit method entry exists and raises `NotImplementedError`. |
-| `get_bgp_config` | `planned` | TBD | Explicit method entry exists and raises `NotImplementedError`. |
-| `get_bgp_neighbors_detail` | `planned` | TBD | Explicit method entry exists and raises `NotImplementedError`. |
+| `get_route_to` | `partial` | `display ip routing-table`, `display ip routing-table {} verbose` | Non-verbose bulk + verbose per-destination. VRF support pending. `longer` param ignored. |
+| `get_bgp_neighbors` | `partial` | `display bgp`, `display bgp peer ipv4` | IPv4 peers only. VRF-scoped peers pending. Some fields default to empty/-1. |
+| `get_network_instances` | `partial` | `display ip vpn-instance`, `display ip vpn-instance instance-name {}` | Default instance + VPN instances. VRF detail interface list pending validation. |
+| `get_bgp_config` | `planned` | TBD | Requires regex-based config parser for hierarchical text; TextFSM not suitable. |
+| `get_bgp_neighbors_detail` | `partial` | `display bgp peer ipv4`, `display bgp peer {} verbose` | Per-peer iteration (expensive). Many fields default to zero/empty. IPv6 pending. |
 | `get_ipv6_neighbors_table` | `planned` | TBD | Explicit method entry exists and raises `NotImplementedError`; required for IPv6 neighbor visibility. |
 | `get_ntp_peers` | `planned` | TBD | Explicit method entry exists and raises `NotImplementedError`. |
 | `get_ntp_servers` | `planned` | TBD | Explicit method entry exists and raises `NotImplementedError`. |

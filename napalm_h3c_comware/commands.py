@@ -203,6 +203,63 @@ DEFAULT_COMMAND_SPECS = (
         roles=SWITCH_ONLY,
         notes="H3C extension, not a standard NAPALM getter.",
     ),
+    # --- get_route_to ---
+    CommandSpec(
+        key="route.table",
+        getter="get_route_to",
+        command="display ip routing-table",
+        versions=COMMON_VERSIONS,
+        roles=SWITCH_AND_ROUTER,
+    ),
+    CommandSpec(
+        key="route.table.verbose",
+        getter="get_route_to",
+        command="display ip routing-table {} verbose",
+        versions=COMMON_VERSIONS,
+        roles=SWITCH_AND_ROUTER,
+        notes="{} replaced by destination prefix.",
+    ),
+    # --- get_network_instances ---
+    CommandSpec(
+        key="vpn.instance",
+        getter="get_network_instances",
+        command="display ip vpn-instance",
+        versions=COMMON_VERSIONS,
+        roles=SWITCH_AND_ROUTER,
+    ),
+    CommandSpec(
+        key="vpn.instance.detail",
+        getter="get_network_instances",
+        command="display ip vpn-instance instance-name {}",
+        versions=COMMON_VERSIONS,
+        roles=SWITCH_AND_ROUTER,
+        notes="{} replaced by instance name.",
+    ),
+    # --- get_bgp_neighbors ---
+    CommandSpec(
+        key="bgp.summary",
+        getter="get_bgp_neighbors",
+        command="display bgp",
+        versions=COMMON_VERSIONS,
+        roles=SWITCH_AND_ROUTER,
+        notes="Extract BGP router_id and local AS.",
+    ),
+    CommandSpec(
+        key="bgp.peer",
+        getter="get_bgp_neighbors",
+        command="display bgp peer ipv4",
+        versions=COMMON_VERSIONS,
+        roles=SWITCH_AND_ROUTER,
+    ),
+    # --- get_bgp_neighbors_detail ---
+    CommandSpec(
+        key="bgp.peer.verbose",
+        getter="get_bgp_neighbors_detail",
+        command="display bgp peer {} verbose",
+        versions=COMMON_VERSIONS,
+        roles=SWITCH_AND_ROUTER,
+        notes="{} replaced by peer IP; expensive per-peer iteration.",
+    ),
 )
 
 
