@@ -15,7 +15,9 @@
 
 ## napalm-h3c-cw7-ssh
 
-`napalm-h3c-cw7-ssh` 是一个基于 SSH 的 H3C Comware V7 的网络设备驱动，是 Netmiko 的高级封装。
+`napalm-h3c-cw7-ssh` 是一个基于 SSH 的 H3C Comware 网络设备驱动，是 Netmiko 的高级封装。当前发布版本以 Comware V7 为主；重构路线目标覆盖 H3C Comware V7 和 V9 的交换机、路由器产品，不包含防火墙平台。
+
+NAPALM 第三方驱动兼容性设计约束记录在 [docs/napalm-compliance.md](docs/napalm-compliance.md)。完整 getter 和方法支持矩阵记录在 [docs/getters-support-matrix.md](docs/getters-support-matrix.md)。
 
 # 支持的设备
 
@@ -25,6 +27,8 @@
 
 
 # 支持的功能
+
+本节是当前代码能力的快速摘要。完整 NAPALM getter 覆盖目标、状态定义和已知限制请以 [docs/getters-support-matrix.md](docs/getters-support-matrix.md) 为准。
 
 - :white_check_mark: is_alive()：检查当前是否与设备连接
 - :white_check_mark: get_facts()：获取设备基础信息，如型号、软件版本、序列号等

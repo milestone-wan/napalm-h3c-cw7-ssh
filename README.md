@@ -16,7 +16,9 @@ NAPALM supports several methods to connect to the devices, to manipulate configu
 
 ## napalm-h3c-cw7-ssh
 
-NAPALM driver for H3C Comware V7 network devices, over ssh.
+NAPALM driver for H3C Comware network devices over SSH. The current released driver is V7-oriented; the refactoring roadmap targets H3C Comware V7 and V9 switches and routers, excluding firewall platforms.
+
+Design constraints for NAPALM third-party driver compatibility are tracked in [docs/napalm-compliance.md](docs/napalm-compliance.md). The detailed getter and method status matrix is tracked in [docs/getters-support-matrix.md](docs/getters-support-matrix.md).
 
 # Supported devices
 
@@ -27,6 +29,8 @@ Some methods may work on Routers.
 Looking forward to your testing and feedback :).
 
 # Supported functions
+
+This section is a quick summary of the current code. For the complete NAPALM getter coverage target, status definitions, and known limitations, see [docs/getters-support-matrix.md](docs/getters-support-matrix.md).
 
 - :white_check_mark: is_alive()
 - :white_check_mark: get_facts()
