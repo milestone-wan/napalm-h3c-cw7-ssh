@@ -46,4 +46,7 @@ setup(
     packages=find_packages(exclude=("test*", "*demo.py")),
     include_package_data=True,  # declarations in MANIFEST.in
     install_requires=reqs,
+    entry_points={
+        "napalm": ["h3c_comware = napalm_h3c_comware:ComwareDriver"],
+    },
 )

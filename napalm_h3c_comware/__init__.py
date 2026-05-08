@@ -12,7 +12,21 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 
+from napalm_h3c_comware.commands import (
+    CommandRegistry,
+    CommandSpec,
+    default_command_registry,
+)
 from napalm_h3c_comware.comware import ComwareDriver
+from napalm_h3c_comware.profiles import ComwareMajorVersion, DeviceProfile, DeviceRole
 
-__all__ = ("ComwareDriver",)
+__all__ = (
+    "ComwareDriver",
+    "ComwareMajorVersion",
+    "CommandRegistry",
+    "CommandSpec",
+    "DeviceProfile",
+    "DeviceRole",
+    "default_command_registry",
+)
 __version__ = "0.1.5"

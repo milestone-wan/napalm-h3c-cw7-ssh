@@ -7,7 +7,7 @@ Value STATUS (\S+)
 Start
   ^\s*Chassis\s+${CHASSIS} -> CHASSIS_DEVICE
   ^\s*Slot\s+${SLOT} -> NORMAL_DEVICE
-  ^\s*Device Info on Slot ${SLOT} -> DEVLOP_TEST
+  ^\s*Device Info on Slot ${SLOT} -> DEVELOP_TEST
 
 NORMAL_DEVICE
   ^\s*Slot\s+${SLOT}
@@ -19,6 +19,6 @@ CHASSIS_DEVICE
   ^\s*Fan(-tray)?\s+${FAN_ID}
   ^\s*Stat(e|us)\s+:\s+${STATUS} -> Record
 
-DEVLOP_TEST
+DEVELOP_TEST
   ^\s*Device Info on Slot ${SLOT}
   ^\s*${FAN_ID}\s+${STATUS} -> Record

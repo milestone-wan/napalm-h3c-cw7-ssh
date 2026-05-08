@@ -49,9 +49,8 @@ def canonical_interface_name_comware(interface):
 
 
 def _search(unit, time_str):
-    """"""
     if re.search(unit, time_str):
-        return int(re.search("(\d+)\s+%s" % (unit), time_str).group(1))
+        return int(re.search(r"(\d+)\s+%s" % (unit), time_str).group(1))
     return 0
 
 
@@ -74,7 +73,7 @@ def parse_time(time_str):
 
 
 def parse_null(value, default, func=None, *args, **kwargs):
-    if value == "":
+    if value is None or value == "":
         return default
     if func:
         return func(value, *args, **kwargs)
