@@ -10,7 +10,7 @@ readme = "README.md"
 license = "Apache-2.0"
 requires-python = ">=3.8"
 authors = [
-    {name = "milestone", email = "milestone@milestone-wan.com"},
+    {name = "milestone", email = "powerwanjun@gmail.com"},
 ]
 classifiers = [
     "Topic :: Utilities",
