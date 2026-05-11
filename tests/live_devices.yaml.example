@@ -1,0 +1,30 @@
+# Live device configuration for integration testing.
+# Copy this file to live_devices.yaml and fill in real credentials.
+# live_devices.yaml is git-ignored and will NOT be committed.
+#
+# Usage:
+#   pytest --live                        # run all live tests against all devices
+#   pytest --live --live-device=s6805    # run against a specific device
+#   pytest --live --live-tag=router      # run against devices matching a tag
+
+devices:
+  - name: s6805               # Required: unique alias for --live-device
+    host: ""                  # Required: IP address or hostname
+    username: ""              # Required: SSH username
+    password: ""              # Required: SSH password
+    port: 22                  # Optional: SSH port (default: 22)
+    tags: [v7, switch]        # Optional: tags for --live-tag filtering
+
+  # - name: s5130
+  #   host: ""
+  #   username: ""
+  #   password: ""
+  #   port: 22
+  #   tags: [v7, switch]
+
+  # - name: msr3640
+  #   host: ""
+  #   username: ""
+  #   password: ""
+  #   port: 22
+  #   tags: [v7, router]

@@ -1,0 +1,31 @@
+NQA entry(admin_test, test_icmp) test results:
+  Send operation times: 3              Receive response times: 3
+  Min/Max/Avg round trip time: 1/5/3 ms
+  Last test result: success
+  Packets sent: 3                      Packets received: 3
+  Packet loss: 0.00%
+  Current test min delay: 1 ms
+  Current test max delay: 5 ms
+  Current test avg delay: 3 ms
+  Last test min delay: 2 ms
+  Last test max delay: 4 ms
+  Last test avg delay: 3 ms
+  Global test min delay: 1 ms
+  Global test max delay: 5 ms
+  Global test avg delay: 3 ms
+
+NQA entry(admin_http, test_http) test results:
+  Send operation times: 5              Receive response times: 4
+  Min/Max/Avg round trip time: 10/50/25 ms
+  Last test result: success
+  Packets sent: 5                      Packets received: 4
+  Packet loss: 20.00%
+  Current test min delay: 10 ms
+  Current test max delay: 50 ms
+  Current test avg delay: 25 ms
+  Last test min delay: 12 ms
+  Last test max delay: 45 ms
+  Last test avg delay: 22 ms
+  Global test min delay: 10 ms
+  Global test max delay: 50 ms
+  Global test avg delay: 25 ms

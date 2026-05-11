@@ -58,13 +58,50 @@ NAPALM configuration workflows should be designed around the standard lifecycle:
 3. `commit_config()` or `discard_config()`
 4. Optional `rollback()` and commit-confirm related methods where Comware behavior can be validated
 
-The design must document these Comware-specific concerns before enabling production configuration changes:
+### Current implementation status
 
-- Whether merge and replace operations can be safely staged.
-- How diffs are generated and whether they are reliable across V7/V9.
-- Whether commit, discard, rollback, and save behavior can be made atomic.
-- Required privilege level and command authorization.
-- Failure handling when a command is rejected halfway through a candidate configuration.
+Merge and replace modes are implemented (`partial` in the support matrix):
+
+- **Merge mode**: No device prerequisites. Candidate config stored locally, applied via `send_config_set()`, saved with `save force`. Error detection via `COMWARE_CONFIG_ERROR_PATTERNS` with automatic rollback on failure.
+- **Replace mode**: Requires `archive configuration` enabled on the device. Candidate config transferred via SCP (`HPComwareFileTransfer`), applied via `configuration replace file`.
+- **Rollback**: Archive-based (`configuration replace file`) when available; falls back to snapshot replay (idempotent, does not remove added commands).
+- **Diff**: Python `difflib` — merge mode uses set-difference, replace mode uses unified diff. No native Comware diff command exists.
+
+### Validated Comware-specific concerns
+
+| Concern | Status | Notes |
+|---------|--------|-------|
+| Merge staging | Validated | Candidate stored locally; no device-side staging needed |
+| Replace staging | Validated | Requires `archive configuration`; file transferred via SCP |
+| Diff reliability | Partial | `difflib` works for text comparison; ordering/whitespace differences may cause noise |
+| Commit atomicity | Partial | Merge is not atomic (commands apply one by one); replace is atomic via `configuration replace file` |
+| Failure handling | Implemented | Error pattern detection + automatic rollback on merge failure |
+| Privilege requirements | Documented | Requires system-view access and `save` privilege; replace also requires SCP and archive |
+| Rollback | Partial | Archive-based: true rollback. Snapshot: idempotent replay only |
+
+### Not yet validated / implemented
+
+- `commit_config(revert_in=N)`: requires `configuration commit confirm-timeout` support, not available on all Comware V7 versions
+- `confirm_commit()` / `has_pending_commit()`: depends on commit-confirm above
+
+### Recently implemented
+
+- `get_config(format="text")`: Implemented. Comware only supports text format; other values accepted but are no-ops.
+- `get_config(sanitized=True)`: Implemented with H3C Comware-specific filter patterns (passwords, keys, SNMP communities).
+- `get_config(full=True)`: Documented as no-op. Comware's ``display current-configuration`` always returns the full configuration.
+- `ping`: Implemented with regex-based CLI output parsing. Supports all standard NAPALM parameters including ``source_interface`` and VRF.
+- `traceroute`: Implemented with regex-based CLI output parsing. Supports VRF and source address.
+- `get_users`: Improved — TextFSM template now supports both TABLE and DETAIL output formats. Config enrichment uses full `display current-configuration configuration local-user` instead of `| include local-user`. Multiple `authorization-attribute user-role` lines resolved to highest privilege level. Config command resolved via `users.config` CommandSpec.
+- `send_command`: Channel-drain fallback strategy — prompt-based `send_command` → `read_channel_timing` drain (without re-sending) → reconnect on connection exception. Handles chassis/frame device long output and stale buffer issues. Commands are sent at most once in the normal path to avoid re-executing non-idempotent operations.
+- `_discover_profile`: Uses `send_command_timing` directly for reliable `display version` on chassis devices. Includes regex fallback for model/version extraction when TextFSM fails.
+- `display_fan.tpl`: Added `Fan Frame N State:` format support for chassis devices (S12504G).
+- `display_local-user.tpl`: Added DETAIL state for verbose user output format.
+- `display_version.tpl`: Refined pattern to `Comware\s+Software.*Version` to avoid false matches on `Release Version` lines in chassis output.
+- `display_ipv6_interface.tpl`: Fixed link-local address matching — `IPv6 is enabled, link-local address is` line has no leading whitespace.
+- `display_current-configuration_configuration_irf-port.tpl`: Fixed `irf-port` line matching — output lines have leading whitespace.
+- `display_nqa_result.tpl`: Uses `Required` constraints and `-> Next.Record Start` to manage EOF duplicate records.
+- Exception classes exported from `__init__.py`: `ComwareDriverError`, `ComwareParserError` (formerly `ParserError`; `ParserError` kept as backward-compatible alias), `UnsupportedCommandError`, `UnsupportedProfileError`, `ConfigManagementError`.
+- `MANIFEST.in` cleaned up: removed stale `templates/*.j2` reference.
 
 Until validated, configuration mutation methods should remain `planned` or `partial` in the support matrix.
 

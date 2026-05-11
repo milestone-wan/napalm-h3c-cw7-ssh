@@ -1,0 +1,10 @@
+Ping 192.168.1.1 (192.168.1.1): 56 data bytes, press CTRL+C to break
+Request time out
+Request time out
+Request time out
+Request time out
+Request time out
+
+--- Ping statistics for 192.168.1.1 ---
+5 packet(s) transmitted, 0 packet(s) received, 100.0% packet loss
+round-trip min/avg/max/std-dev = 0.000/0.000/0.000/0.000 ms

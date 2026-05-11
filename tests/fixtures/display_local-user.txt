@@ -1,0 +1,5 @@
+ Device management user(s):
+  Username         Service type     State
+  admin            SSH/Terminal     Active
+  monitor          SSH              Active
+  operator         Terminal         Active

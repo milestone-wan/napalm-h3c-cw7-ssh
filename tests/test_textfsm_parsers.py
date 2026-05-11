@@ -234,3 +234,107 @@ class TestDisplayIrfConfig:
         output = _read_fixture("display_current-configuration_configuration_irf-port.txt")
         result = _parse("display_current-configuration_configuration_irf-port", output)
         assert len(result) > 0
+
+
+class TestDisplayCurrentConfigurationNtpService:
+    def test_parse(self):
+        output = _read_fixture("display_current-configuration_ntp-service.txt")
+        result = _parse("display_current-configuration_ntp-service", output)
+        assert len(result) == 3
+        entry = result[0]
+        assert entry.get("address", "") != ""
+        assert entry.get("association_type", "") != ""
+
+
+class TestDisplaySnmpAgentSysInfo:
+    def test_parse(self):
+        output = _read_fixture("display_snmp-agent_sys-info.txt")
+        result = _parse("display_snmp-agent_sys-info", output)
+        assert len(result) > 0
+        entry = result[0]
+        assert entry.get("chassis_id", "") != ""
+
+
+class TestDisplayCurrentConfigurationSnmpCommunity:
+    def test_parse(self):
+        output = _read_fixture("display_current-configuration_snmp-community.txt")
+        result = _parse("display_current-configuration_snmp-community", output)
+        assert len(result) == 2
+        entry = result[0]
+        assert entry.get("community_name", "") != ""
+        assert entry.get("mode", "") != ""
+
+
+class TestDisplayCurrentConfigurationNqa:
+    def test_parse(self):
+        output = _read_fixture("display_current-configuration_nqa.txt")
+        result = _parse("display_current-configuration_nqa", output)
+        assert len(result) > 0
+        # First record should have admin/test from nqa entry line
+        entry_with_admin = [e for e in result if e.get("admin", "")]
+        assert len(entry_with_admin) >= 2
+
+
+class TestDisplayInterfaceCounters:
+    def test_parse(self):
+        output = _read_fixture("display_interface_counters.txt")
+        result = _parse("display_interface_counters", output)
+        assert len(result) > 0
+        # Should have at least one interface name record
+        iface_records = [e for e in result if e.get("interface", "")]
+        assert len(iface_records) >= 1
+        # Should have Input/Output section records
+        section_records = [e for e in result if e.get("section", "")]
+        assert len(section_records) >= 2
+
+
+class TestDisplayLocalUser:
+    def test_parse(self):
+        output = _read_fixture("display_local-user.txt")
+        result = _parse("display_local-user", output)
+        assert len(result) > 0
+        entry = result[0]
+        assert entry.get("username", "") != ""
+        assert entry.get("state", "") != ""
+
+
+class TestDisplayNtpServiceSessions:
+    def test_parse(self):
+        output = _read_fixture("display_ntp-service_sessions.txt")
+        result = _parse("display_ntp-service_sessions", output)
+        assert len(result) == 2
+        entry = result[0]
+        assert entry.get("clock_source", "") != ""
+        assert entry.get("clock_stratum", "") != ""
+
+
+class TestDisplayIpv6Neighbors:
+    def test_parse(self):
+        output = _read_fixture("display_ipv6_neighbors.txt")
+        result = _parse("display_ipv6_neighbors", output)
+        assert len(result) == 3
+        entry = result[0]
+        assert entry.get("ipv6_address", "") != ""
+        assert entry.get("interface", "") != ""
+
+
+class TestDisplayNqaResult:
+    def test_parse(self):
+        output = _read_fixture("display_nqa_result.txt")
+        result = _parse("display_nqa_result", output)
+        assert len(result) >= 2
+        entry = result[0]
+        assert entry.get("admin", "") != ""
+        assert entry.get("test", "") != ""
+        assert entry.get("probe_count", "") != ""
+
+
+class TestDisplayTransceiverDiagnosisInterface:
+    def test_parse(self):
+        output = _read_fixture("display_transceiver_diagnosis_interface.txt")
+        result = _parse("display_transceiver_diagnosis_interface", output)
+        assert len(result) == 2
+        entry = result[0]
+        assert entry.get("interface", "") != ""
+        assert entry.get("tx_power", "") != ""
+        assert entry.get("rx_power", "") != ""

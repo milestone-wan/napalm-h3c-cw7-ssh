@@ -1,0 +1,21 @@
+ Clock source: 10.1.1.1
+ Clock stratum: 3
+ Clock status: configured, master, sane, valid
+ Reference clock ID: 10.2.2.2
+ Reachability: 255
+ Current poll interval: 64 s
+ Last update time: 100 s ago
+ Offset: 0.1234 ms
+ Delay: 1.2345 ms
+ Jitter: 0.5678 ms
+
+ Clock source: 172.16.0.1
+ Clock stratum: 2
+ Clock status: configured, sane, valid
+ Reference clock ID: 172.16.0.0
+ Reachability: 127
+ Current poll interval: 128 s
+ Last update time: 50 s ago
+ Offset: -0.5 ms
+ Delay: 5.678 ms
+ Jitter: 1.234 ms

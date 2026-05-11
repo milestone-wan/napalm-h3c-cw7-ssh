@@ -1,0 +1,16 @@
+nqa entry admin_test test_icmp
+ type icmp
+ destination ip 10.1.1.1
+ source ip 192.168.1.1
+ probe count 3
+ probe timeout 1000
+ frequency 60
+nqa entry admin_http test_http
+ type http
+ destination ip 10.2.2.2
+ source ip 192.168.1.1
+ probe count 5
+ probe timeout 2000
+ frequency 120
+nqa schedule admin_test test_icmp start-time now lifetime forever
+nqa schedule admin_http test_http start-time now lifetime forever

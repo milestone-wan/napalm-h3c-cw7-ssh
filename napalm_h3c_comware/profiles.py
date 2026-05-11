@@ -74,6 +74,11 @@ def detect_comware_major_version(text: str) -> Optional[ComwareMajorVersion]:
         return ComwareMajorVersion.V9
     if re.search(r"comware\s+software.*version\s+7|version\s+7\.", normalized):
         return ComwareMajorVersion.V7
+    # Fallback: infer from CMW version tag in image names (e.g., "CMW710" -> V7)
+    if re.search(r"cmw7|cmw910", normalized):
+        return ComwareMajorVersion.V7
+    if re.search(r"cmw9[^1]", normalized):
+        return ComwareMajorVersion.V9
     return None
 
 

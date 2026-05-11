@@ -6,7 +6,7 @@
 
 [English](README.md) | [中文](README_CN.md)
 
-本仓库同步发布在 https://github.com/napalm-automation-community/napalm-h3c-cw7-ssh 
+本仓库同步发布在 https://github.com/milestone-wan/napalm-h3c-cw7-ssh
 
 ## NAPALM
 

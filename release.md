@@ -3,7 +3,7 @@
 ##  Local install test
 
 ```
-python setup.py develop
+pip install -e .
 ```
 
 ## Publish

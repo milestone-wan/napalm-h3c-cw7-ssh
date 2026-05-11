@@ -1,4 +1,4 @@
-# Copyright 2022 Eric Wu. All rights reserved.
+# Copyright 2022 milestone. All rights reserved.
 #
 # The contents of this file are licensed under the Apache License, Version 2.0
 # (the "License"); you may not use this file except in compliance with the
@@ -18,15 +18,29 @@ from napalm_h3c_comware.commands import (
     default_command_registry,
 )
 from napalm_h3c_comware.comware import ComwareDriver
+from napalm_h3c_comware.exceptions import (
+    ComwareDriverError,
+    ComwareParserError,
+    ConfigManagementError,
+    ParserError,
+    UnsupportedCommandError,
+    UnsupportedProfileError,
+)
 from napalm_h3c_comware.profiles import ComwareMajorVersion, DeviceProfile, DeviceRole
 
 __all__ = (
     "ComwareDriver",
+    "ComwareDriverError",
     "ComwareMajorVersion",
     "CommandRegistry",
     "CommandSpec",
+    "ComwareParserError",
+    "ConfigManagementError",
     "DeviceProfile",
     "DeviceRole",
+    "ParserError",
+    "UnsupportedCommandError",
+    "UnsupportedProfileError",
     "default_command_registry",
 )
 __version__ = "0.1.5"

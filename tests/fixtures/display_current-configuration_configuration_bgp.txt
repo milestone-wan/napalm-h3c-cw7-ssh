@@ -1,0 +1,22 @@
+bgp 65000
+ group EXTERNAL external
+  peer EXTERNAL as-number 65001
+  peer EXTERNAL description "External BGP peers"
+  peer EXTERNAL import-route-policy IMPORT_POLICY
+  peer EXTERNAL export-route-policy EXPORT_POLICY
+ peer 10.0.0.2 as-number 65001
+ peer 10.0.0.2 group EXTERNAL
+ peer 10.0.0.2 description "Primary external peer"
+ peer 10.0.0.2 password cipher $c$3$xxx
+ peer 192.168.1.1 as-number 65002
+ peer 192.168.1.1 description "Standalone peer"
+ #
+ address-family ipv4
+  peer EXTERNAL enable
+  peer 10.0.0.2 enable
+  peer 192.168.1.1 enable
+  peer EXTERNAL route-policy IMPORT_POLICY import
+  peer EXTERNAL route-policy EXPORT_POLICY export
+  peer 10.0.0.2 route-policy PEER_IMPORT import
+  peer 10.0.0.2 route-policy PEER_EXPORT export
+ #

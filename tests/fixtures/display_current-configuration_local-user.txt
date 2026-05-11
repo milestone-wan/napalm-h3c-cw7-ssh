@@ -1,0 +1,8 @@
+local-user admin class manage
+ password hash $h$6$xxx
+ authorization-attribute user-role network-admin
+ service-type ssh terminal
+local-user monitor class manage
+ password cipher $c$3$xxx
+ authorization-attribute user-role network-operator
+ service-type ssh

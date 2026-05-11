@@ -91,12 +91,16 @@ celerybeat-schedule
 
 # Environments
 .env
+.env.*
 .venv
 env/
 venv/
 ENV/
 env.bak/
 venv.bak/
+
+# Live device credentials
+live_devices.yaml
 
 # Spyder project settings
 .spyderproject

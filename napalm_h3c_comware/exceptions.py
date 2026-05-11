@@ -13,8 +13,12 @@ class UnsupportedCommandError(ComwareDriverError):
     """Raised when no command specification supports the requested profile."""
 
 
-class ParserError(ComwareDriverError):
+class ComwareParserError(ComwareDriverError):
     """Raised when raw command output cannot be parsed safely."""
+
+
+# Backward-compatible alias; will be removed in a future version.
+ParserError = ComwareParserError
 
 
 class ConfigManagementError(ComwareDriverError):

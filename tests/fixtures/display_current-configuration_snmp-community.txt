@@ -1,0 +1,4 @@
+snmp-agent community read public
+snmp-agent community write private acl 2000
+snmp-agent sys-info contact admin@example.com
+snmp-agent sys-info location Building-A Floor-3

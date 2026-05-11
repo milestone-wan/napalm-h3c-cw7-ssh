@@ -1,0 +1,5 @@
+Type: S-Static    D-Dynamic    I-Incomplete
+IPv6 Address                 MAC Address     VLAN/VSI  Interface     State  Aging
+FE80::1                      000f-e201-0001  1         GE1/0/1       REACH  10
+2001:DB8::2                  000f-e201-0002  2         GE1/0/2       STALE  120
+2001:DB8::3                  000f-e201-0003  10        GE1/0/3       REACH  30

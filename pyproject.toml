@@ -1,0 +1,65 @@
+[build-system]
+requires = ["setuptools>=64"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "napalm-h3c-comware"
+dynamic = ["version"]
+description = "NAPALM driver for H3C Comware V7 network devices, over SSH."
+readme = "README.md"
+license = "Apache-2.0"
+requires-python = ">=3.8"
+authors = [
+    {name = "milestone", email = "milestone@milestone-wan.com"},
+]
+classifiers = [
+    "Topic :: Utilities",
+    "Development Status :: 4 - Beta",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Operating System :: POSIX :: Linux",
+    "Operating System :: MacOS",
+]
+dependencies = [
+    "napalm>=3.0.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/milestone-wan/napalm-h3c-cw7-ssh"
+Repository = "https://github.com/milestone-wan/napalm-h3c-cw7-ssh"
+"Bug Tracker" = "https://github.com/milestone-wan/napalm-h3c-cw7-ssh/issues"
+"Community Repository" = "https://github.com/napalm-automation-community/napalm-h3c-cw7-ssh"
+
+[project.entry-points."napalm"]
+h3c_comware = "napalm_h3c_comware:ComwareDriver"
+
+[project.optional-dependencies]
+dev = [
+    "pytest",
+    "pytest-cov",
+    "twine",
+    "build",
+]
+
+[tool.setuptools]
+packages = {find = {exclude = ["tests*", "tests"]}}
+
+[tool.setuptools.dynamic]
+version = {attr = "napalm_h3c_comware.__version__"}
+
+[tool.setuptools.package-data]
+"napalm_h3c_comware" = ["utils/textfsm_templates/*.tpl"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+markers = [
+    "live: live device integration test (requires --live flag)",
+]

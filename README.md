@@ -6,7 +6,7 @@
 
 [English](README.md) | [中文](README_CN.md)
 
-This repository is published in https://github.com/napalm-automation-community/napalm-h3c-cw7-ssh
+This repository is published in https://github.com/milestone-wan/napalm-h3c-cw7-ssh
 
 ## NAPALM
 

@@ -8,6 +8,7 @@ Start
   ^\s*Chassis\s+${CHASSIS} -> CHASSIS_DEVICE
   ^\s*Slot\s+${SLOT} -> NORMAL_DEVICE
   ^\s*Device Info on Slot ${SLOT} -> DEVELOP_TEST
+  ^\s*Fan\s+Frame\s+${FAN_ID}\s+Stat(e|us)\s*:\s*${STATUS} -> Record
 
 NORMAL_DEVICE
   ^\s*Slot\s+${SLOT}

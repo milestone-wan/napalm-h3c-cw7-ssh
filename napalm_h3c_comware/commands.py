@@ -267,6 +267,106 @@ DEFAULT_COMMAND_SPECS = (
         roles=SWITCH_AND_ROUTER,
         notes="{} replaced by peer IP; expensive per-peer iteration.",
     ),
+    # --- get_users ---
+    CommandSpec(
+        key="users",
+        getter="get_users",
+        command="display local-user",
+        versions=COMMON_VERSIONS,
+        roles=SWITCH_AND_ROUTER,
+    ),
+    CommandSpec(
+        key="users.config",
+        getter="get_users",
+        command="display current-configuration configuration local-user",
+        versions=COMMON_VERSIONS,
+        roles=SWITCH_AND_ROUTER,
+        notes="Config enrichment for level/password via full local-user config section.",
+    ),
+    # --- get_ipv6_neighbors_table ---
+    CommandSpec(
+        key="ipv6.neighbors",
+        getter="get_ipv6_neighbors_table",
+        command="display ipv6 neighbors",
+        versions=COMMON_VERSIONS,
+        roles=SWITCH_AND_ROUTER,
+    ),
+    # --- get_ntp_servers ---
+    CommandSpec(
+        key="ntp.servers",
+        getter="get_ntp_servers",
+        command="display current-configuration | include ntp-service",
+        template_name="display_current-configuration_ntp-service",
+        versions=COMMON_VERSIONS,
+        roles=SWITCH_AND_ROUTER,
+    ),
+    # --- get_snmp_information ---
+    CommandSpec(
+        key="snmp.sysinfo",
+        getter="get_snmp_information",
+        command="display snmp-agent sys-info",
+        template_name="display_snmp-agent_sys-info",
+        versions=COMMON_VERSIONS,
+        roles=SWITCH_AND_ROUTER,
+    ),
+    CommandSpec(
+        key="snmp.community",
+        getter="get_snmp_information",
+        command="display current-configuration | include snmp-agent community",
+        template_name="display_current-configuration_snmp-community",
+        versions=COMMON_VERSIONS,
+        roles=SWITCH_AND_ROUTER,
+    ),
+    # --- get_probes_config ---
+    CommandSpec(
+        key="probes.config",
+        getter="get_probes_config",
+        command="display current-configuration | include nqa",
+        template_name="display_current-configuration_nqa",
+        versions=COMMON_VERSIONS,
+        roles=SWITCH_AND_ROUTER,
+    ),
+    # --- get_interfaces_counters ---
+    CommandSpec(
+        key="interfaces.counters",
+        getter="get_interfaces_counters",
+        command="display interface",
+        template_name="display_interface_counters",
+        versions=COMMON_VERSIONS,
+        roles=SWITCH_AND_ROUTER,
+    ),
+    # --- get_ntp_stats ---
+    CommandSpec(
+        key="ntp.stats",
+        getter="get_ntp_stats",
+        command="display ntp-service sessions",
+        versions=COMMON_VERSIONS,
+        roles=SWITCH_AND_ROUTER,
+    ),
+    # --- get_optics ---
+    CommandSpec(
+        key="optics",
+        getter="get_optics",
+        command="display transceiver diagnosis interface",
+        versions=COMMON_VERSIONS,
+        roles=SWITCH_AND_ROUTER,
+    ),
+    # --- get_bgp_config ---
+    CommandSpec(
+        key="bgp.config",
+        getter="get_bgp_config",
+        command="display current-configuration configuration bgp",
+        versions=COMMON_VERSIONS,
+        roles=SWITCH_AND_ROUTER,
+    ),
+    # --- get_probes_results ---
+    CommandSpec(
+        key="probes.results",
+        getter="get_probes_results",
+        command="display nqa result",
+        versions=COMMON_VERSIONS,
+        roles=SWITCH_AND_ROUTER,
+    ),
 )
 
 
